@@ -63,7 +63,7 @@ class FetchOptionData:
                INCLUDE_NIFTY, 
                INCLUDE_BANKNIFTY, 
                INCLUDE_FINNIFTY,
-               BNF_NIFTY_FUT_EXPIRY,
+               BNF_FUT_EXPIRY,
                NIFTY_FUT_EXPIRY,
                FINNIFTY_FUT_EXPIRY,
                DEBUG=False
