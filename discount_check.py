@@ -194,7 +194,7 @@ class FetchOptionData:
         else:
           self.is_nifty_opt_date_valid = False  
   def getStrikes(self, index, spot):
-    step = 11
+    step = 5
     spot_diff = 1000 if index == 'BANKNIFTY' else 500
     rem = spot%100
 
