@@ -73,7 +73,7 @@ class FetchOptionData:
     self.INCLUDE_FINNIFTY = INCLUDE_FINNIFTY
     self.DEBUG = DEBUG
 
-    self.BNF_NIFTY_FUT_EXPIRY = BNF_NIFTY_FUT_EXPIRY
+    self.BNF_FUT_EXPIRY = BNF_FUT_EXPIRY
     self.NIFTY_FUT_EXPIRY = NIFTY_FUT_EXPIRY
     self.FINNIFTY_FUT_EXPIRY = FINNIFTY_FUT_EXPIRY
 
@@ -84,7 +84,7 @@ class FetchOptionData:
     self.is_nifty_fut_date_valid = None
     self.is_bnf_fut_date_valid = None
     self.is_finnifty_fut_date_valid = None
-    self.is_bnf_nifty_opt_date_valid = None
+    self.is_bnf_opt_date_valid = None
     self.is_nifty_opt_date_valid = None
     self.is_finnifty_opt_date_valid = None
 
