@@ -57,12 +57,14 @@ class CustomMultiProcess(multiprocessing.Process):
 class FetchOptionData:
   def __init__(self, creds, email, 
                pwd, dob, 
-               NF_BNF_OPT_EXPIRY_EPOCH_TIME,
+               BNF_OPT_EXPIRY_EPOCH_TIME,
+               NF_OPT_EXPIRY_EPOCH_TIME,
                FIN_OPT_EXPIRY_EPOCH_TIME,
                INCLUDE_NIFTY, 
                INCLUDE_BANKNIFTY, 
                INCLUDE_FINNIFTY,
                BNF_NIFTY_FUT_EXPIRY,
+               NIFTY_FUT_EXPIRY,
                FINNIFTY_FUT_EXPIRY,
                DEBUG=False
                ):
@@ -72,14 +74,18 @@ class FetchOptionData:
     self.DEBUG = DEBUG
 
     self.BNF_NIFTY_FUT_EXPIRY = BNF_NIFTY_FUT_EXPIRY
+    self.NIFTY_FUT_EXPIRY = NIFTY_FUT_EXPIRY
     self.FINNIFTY_FUT_EXPIRY = FINNIFTY_FUT_EXPIRY
 
-    self.NF_BNF_OPT_EXPIRY_EPOCH_TIME = NF_BNF_OPT_EXPIRY_EPOCH_TIME
+    self.BNF_OPT_EXPIRY_EPOCH_TIME = BNF_OPT_EXPIRY_EPOCH_TIME
+    self.NF_OPT_EXPIRY_EPOCH_TIME = NF_OPT_EXPIRY_EPOCH_TIME
     self.FIN_OPT_EXPIRY_EPOCH_TIME = FIN_OPT_EXPIRY_EPOCH_TIME
 
-    self.is_bnf_nifty_fut_date_valid = None
+    self.is_nifty_fut_date_valid = None
+    self.is_bnf_fut_date_valid = None
     self.is_finnifty_fut_date_valid = None
     self.is_bnf_nifty_opt_date_valid = None
+    self.is_nifty_opt_date_valid = None
     self.is_finnifty_opt_date_valid = None
 
     self.is_parallel_run = True if INCLUDE_NIFTY + INCLUDE_BANKNIFTY + INCLUDE_FINNIFTY > 1 else False
@@ -112,28 +118,33 @@ class FetchOptionData:
     try:
       display(HTML("<h2 style='color: #FD7F20'>Checking Futures and Options Expiry date</h2>"))
       self.check_expiry_dates('NIFTY')
+      self.check_expiry_dates('BANKNIFTY')
       self.check_expiry_dates('FINNIFTY')
 
-      if (not self.is_bnf_nifty_fut_date_valid) or (not self.is_finnifty_fut_date_valid):
+      if (not self.is_bnf_fut_date_valid) or (not self.is_finnifty_fut_date_valid) or (not self.is_nifty_fut_date_valid):
         raise InvalidFutureExpiryDateException
       else:
         display(HTML("<h2 style='color: #00D100'>Futures date Valid</h2>"))
 
-      if (not self.is_bnf_nifty_opt_date_valid) or (not self.is_finnifty_opt_date_valid):
+      if (not self.is_bnf_opt_date_valid) or (not self.is_finnifty_opt_date_valid) or (not self.is_nifty_opt_date_valid):
         raise InvalidOptionExpiryDateException
       else:
         display(HTML("<h2 style='color: #00D100'>Option Expiry date Valid</h2>"))
 
     except InvalidFutureExpiryDateException:
-      if not self.is_bnf_nifty_fut_date_valid:
-        display(HTML(f"<h2 style='color: #FF4500'>NIFTY/BANKNIFTY Futures Date Invalid</h2>"))
+      if not self.is_nifty_fut_date_valid:
+        display(HTML(f"<h2 style='color: #FF4500'>NIFTY Futures Date Invalid</h2>"))
+      if not self.is_bnf_fut_date_valid:
+        display(HTML(f"<h2 style='color: #FF4500'>NBANKNIFTY Futures Date Invalid</h2>"))
       if not self.is_finnifty_fut_date_valid:
         display(HTML(f"<h2 style='color: #FF4500'>FINNIFTY Futures Date Invalid</h2>"))
       raise InvalidFutureExpiryDateException
 
     except InvalidOptionExpiryDateException:
-      if not self.is_bnf_nifty_opt_date_valid:
-        display(HTML(f"<h2 style='color: #FF4500'>NIFTY/BANKNIFTY Option Expiry Date Invalid</h2>"))
+      if not self.is_nifty_opt_date_valid:
+        display(HTML(f"<h2 style='color: #FF4500'>NIFTY Option Expiry Date Invalid</h2>"))
+      if not self.is_bnf_opt_date_valid:
+        display(HTML(f"<h2 style='color: #FF4500'>BANKNIFTY Option Expiry Date Invalid</h2>"))
       if not self.is_finnifty_opt_date_valid:
         display(HTML(f"<h2 style='color: #FF4500'>FINNIFTY Option Expiry Date Invalid</h2>"))
       raise InvalidOptionExpiryDateException
@@ -148,17 +159,17 @@ class FetchOptionData:
       raise TypeError
     else:
       expiry_dates = [int(x['ExpiryDate'][6:][:-7]) for x in expiry_dates['Expiry']]
-      if (index == 'BANKNIFTY' or index == 'NIFTY'):
-        exp = getEpochTime(self.BNF_NIFTY_FUT_EXPIRY, ' ')
+      if (index == 'BANKNIFTY'):
+        exp = getEpochTime(self.BNF_FUT_EXPIRY, ' ')
         if exp in expiry_dates:
-          self.is_bnf_nifty_fut_date_valid = True
+          self.is_bnf_fut_date_valid = True
         else:
-          self.is_bnf_nifty_fut_date_valid = False
+          self.is_bnf_fut_date_valid = False
 
-        if self.NF_BNF_OPT_EXPIRY_EPOCH_TIME in expiry_dates:
-          self.is_bnf_nifty_opt_date_valid = True
+        if self.BNF_OPT_EXPIRY_EPOCH_TIME in expiry_dates:
+          self.is_bnf_opt_date_valid = True
         else:
-          self.is_bnf_nifty_opt_date_valid = False
+          self.is_bnf_opt_date_valid = False
 
       elif index == 'FINNIFTY':
         exp = getEpochTime(self.FINNIFTY_FUT_EXPIRY, ' ')
@@ -171,7 +182,17 @@ class FetchOptionData:
           self.is_finnifty_opt_date_valid = True
         else:
           self.is_finnifty_opt_date_valid = False
+      if (index == 'NIFTY'):
+        exp = getEpochTime(self.NIFTY_FUT_EXPIRY, ' ')
+        if exp in expiry_dates:
+          self.is_nifty_fut_date_valid = True
+        else:
+          self.is_nifty_fut_date_valid = False
 
+        if self.NF_OPT_EXPIRY_EPOCH_TIME in expiry_dates:
+          self.is_nifty_opt_date_valid = True
+        else:
+          self.is_nifty_opt_date_valid = False  
   def getStrikes(self, index, spot):
     step = 11
     spot_diff = 1000 if index == 'BANKNIFTY' else 500
@@ -339,8 +360,8 @@ class FetchOptionData:
   def fetchNifty(self):
     try:
       index = 'NIFTY'
-      fut_expiry = self.BNF_NIFTY_FUT_EXPIRY
-      time_code = self.NF_BNF_OPT_EXPIRY_EPOCH_TIME
+      fut_expiry = self.NIFTY_FUT_EXPIRY
+      time_code = self.NF_OPT_EXPIRY_EPOCH_TIME
 
       manager = multiprocessing.Manager()
       value_result = manager.dict()
@@ -363,8 +384,8 @@ class FetchOptionData:
   def fetchBankNifty(self):
     try:
       index = 'BANKNIFTY'
-      fut_expiry = self.BNF_NIFTY_FUT_EXPIRY
-      time_code = self.NF_BNF_OPT_EXPIRY_EPOCH_TIME
+      fut_expiry = self.BNF_FUT_EXPIRY
+      time_code = self.BNF_OPT_EXPIRY_EPOCH_TIME
 
       manager = multiprocessing.Manager()
       value_result = manager.dict()
