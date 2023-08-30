@@ -583,7 +583,7 @@ class FetchOptionData:
     html = html.replace("""<table border="1" class="dataframe">""", f"""<table border="1" class="dataframe {class_name}" id="dataframe">""")
     html = html.replace("""<td>Discount</td>""",'<td id="discount">Discount</td>')
     html = html.replace("""<th>10</th>""",'<th class="atm">ATM</th>')
-     html = html.replace("""<th>0</th>\n      <th>1</th>\n      <th>2</th>\n      <th>3</th>\n      <th>4</th>\n      <th>5</th>\n      <th>6</th>\n      <th>7</th>\n      <th>8</th>\n      <th>9</th>\n      """,'<th colspan=10 class="calls">Calls</th>')
+    html = html.replace("""<th>0</th>\n      <th>1</th>\n      <th>2</th>\n      <th>3</th>\n      <th>4</th>\n      <th>5</th>\n      <th>6</th>\n      <th>7</th>\n      <th>8</th>\n      <th>9</th>\n      """,'<th colspan=10 class="calls">Calls</th>')
     html = html.replace("""<th>11</th>\n      <th>12</th>\n      <th>13</th>\n      <th>14</th>\n      <th>15</th>\n      <th>16</th>\n      <th>17</th>\n      <th>18</th>\n      <th>19</th>\n      <th>20</th>\n    """,'<th colspan=10 class="puts">Puts</th>')
     html = html.replace(
         f"""<table border="1" class="dataframe {class_name}" id="dataframe">""", 
@@ -616,4 +616,3 @@ class FetchOptionData:
             html += f'<h3><i>Fetching {idx} Option data.....</i></h3>'
     html += '</div>'
     display(HTML(html))
-    
