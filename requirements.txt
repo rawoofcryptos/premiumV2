@@ -8,3 +8,4 @@ urllib3
 loguru
 Crypto
 websocket
+cryptography==36.0.2
